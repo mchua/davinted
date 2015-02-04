@@ -1,0 +1,66 @@
+/**
+ * Brightness quadrants.
+ * by Mel Chua
+ * Outputs the total brightness of top/bottom/left/right screen quadrants. 
+ */
+
+
+import processing.video.*;
+
+Capture video;
+
+void setup() {
+  size(640, 480);
+  // Uses the default video input, see the reference if this causes an error
+  video = new Capture(this, width, height);
+  video.start();  
+  noStroke();
+  smooth();
+}
+
+void draw() {
+  if (video.available()) {
+    video.read();
+    image(video, 0, 0, width, height); // Draw the webcam video onto the screen
+    
+    //Variables for holding brightness of the 4 quadrants
+    // right, left, top, bottom
+    float total_bright_top_right = 0;
+    float total_bright_top_left = 0;
+    float total_bright_bot_right = 0;
+    float total_bright_bot_left = 0;
+    // Sum the brightness of the screen.
+    // For each row of pixels in the video image and
+    // for each pixel in the yth row, add each pixel's brightness to the total.
+    video.loadPixels();
+    int index = 0;
+    for (int y = 0; y < video.height; y++) {
+      for (int x = 0; x < video.width; x++) {
+        // Get the color stored in the pixel
+        int pixelValue = video.pixels[index];
+        // Determine the brightness of the pixel
+        float pixelBrightness = brightness(pixelValue);
+        // Add the brightness to the proper quadrant.
+        if (y < video.height/2){   // Pixel is on top
+          if (x < video.width/2){  // Pixel is right (and top)
+            total_bright_top_left += pixelBrightness/100000;
+          }
+          else{                    // Pixel is left (and top)
+            total_bright_top_right += pixelBrightness/100000;
+          }
+        }
+        else{                      // Pixel is on bottom
+          if (x < video.width/2){  // Pixel is right (and bottom)
+            total_bright_bot_left += pixelBrightness/100000;
+          }
+          else{                    // Pixel is left (and bottom)
+            total_bright_bot_right += pixelBrightness/100000;
+          }
+        }
+        index++;
+      }
+    }
+    // Print the total brightness of the whole screen.
+    print("Top L, R, Bot R, L", total_bright_top_left, "\t", total_bright_top_right, "\t", total_bright_bot_left, "\t", total_bright_bot_right, "\n");
+  }
+}
