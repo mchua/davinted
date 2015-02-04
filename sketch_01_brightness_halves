@@ -1,0 +1,52 @@
+/**
+ * Brightness halves
+ * by Mel Chua
+ * Outputs the total brightness of the top/bottom halves of the screen. 
+ */
+
+
+import processing.video.*;
+
+Capture video;
+
+void setup() {
+  size(640, 480);
+  // Uses the default video input, see the reference if this causes an error
+  video = new Capture(this, width, height);
+  video.start();  
+  noStroke();
+  smooth();
+}
+
+void draw() {
+  if (video.available()) {
+    video.read();
+    image(video, 0, 0, width, height); // Draw the webcam video onto the screen
+    float total_brightness_top = 0; // Total brightness of the screen, top half
+    float total_brightness_bottom = 0; // Total brightness of the screen, bottom half
+    // Sum the brightness of the screen.
+    // For each row of pixels in the video image and
+    // for each pixel in the yth row, add each pixel's brightness to the total.
+    video.loadPixels();
+    int index = 0;
+    for (int y = 0; y < video.height; y++) {
+      for (int x = 0; x < video.width; x++) {
+        // Get the color stored in the pixel
+        int pixelValue = video.pixels[index];
+        // Determine the brightness of the pixel
+        float pixelBrightness = brightness(pixelValue);
+        // If it's in the top half, add to total_brightness_top.
+        // Otherwise, add to total_brightness_bottom.
+        if (y < video.height/2){
+          total_brightness_top += pixelBrightness/100000;
+        }
+        else{
+          total_brightness_bottom += pixelBrightness/100000;
+        }
+        index++;
+      }
+    }
+    // Print the total brightness of the whole screen.
+    print("Brightness:\t", total_brightness_top, "\t", total_brightness_bottom, "\n");
+  }
+}
