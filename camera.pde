@@ -13,8 +13,14 @@ import processing.video.*; // Enables webcam use
 import oscP5.*;            // Enables OSC messaging
 import netP5.*;            // Enables OSC message sending over the network
 
-// Video setup
+/**
+// OPTION 1: Default video setup
 Capture video;
+**/
+
+// OPTION 2: GScapture video setup
+GSCapture video;
+boolean grid = false;
 
 // OSC setup
 OscP5 oscP5;
@@ -23,10 +29,17 @@ NetAddress myRemoteLocation;
 
 void setup() {
   
-  // Set up screen
+  /**
+  // OPTION 1: Default screen setup
   size(640, 480);
-  // Uses the default video input, see the reference if this causes an error
   video = new Capture(this, width, height);
+  **/
+  
+  // OPTION 2: GScapture screen setup
+  size(800, 600,OPENGL);
+  video = new GSCapture(this, width, height);
+  
+  // Screen setup regardless of option (default/GScapture)
   video.start();  
   noStroke();
   smooth();
